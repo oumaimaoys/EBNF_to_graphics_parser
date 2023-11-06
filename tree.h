@@ -8,6 +8,6 @@ typedef struct node_S {
 
 tree initiate_tree();
 
-tree create_node(char* info);
+tree create_node(char* data);
 
-void read_tree(tree t, int new_line);
+void read_tree(tree root, int new_line);
