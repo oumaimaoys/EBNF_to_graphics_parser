@@ -1,17 +1,13 @@
 
 typedef struct node_S *tree; // pointer to first node which defines the tree
 typedef struct node_S {
-    char info[30];
+    char* info;
     tree successor; // successors in a list, and the node point to the first element;
     tree next_sibling;
 } node;
 
 tree initiate_tree();
 
-tree create_node(char info[30]);
+tree create_node(char* info);
 
-void add_sibling(tree node, tree previous_sibling);
-
-void add_successor(tree node, tree predecessor);
-
-void browse_tree(tree t);
+void read_tree(tree t, int new_line);
