@@ -56,11 +56,15 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "C_Cpp.errorSquiggles": "disabled",
+  "C_Cpp.errorSquiggles": "enabled",
   "files.associations": {
     "*.embeddedhtml": "html",
     "*.c": "c",
     "*.html": "django-html",
-    "parser.h": "c"
-  }
+    "parser.h": "c",
+    "gtk.h": "c"
+  },
+  "C_Cpp.default.macFrameworkPath": [
+    "\"C:/msys64/mingw64/**\""
+  ]
 }

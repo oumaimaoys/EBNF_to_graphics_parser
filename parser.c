@@ -19,36 +19,6 @@ char* slice_prefix(const char* source, int endIndex){
     return slicedString;
 }
 
-int isValid(const char* code){
-    int flag = 1;
-    if((strlen(code)==0) || (strlen(code)==1 && !isalpha(code[0]))){
-        flag = 0;
-    }
-    return flag;
-}
-int isTerminal(const char* text) { // returns 1 if terminal
-    int len = strlen(text);
-    if (len == 0) {
-        return 0;  
-    }
-    // Check if the text is enclosed in double quotes
-    if (text[0] == '"' && text[len - 1] == '"' && len > 1) {
-        // Check if there are only alphanumeric characters between quotes
-        for (int i = 1; i < len - 1; i++) {
-            if (!isalnum(text[i])) {
-                return 0;  
-            }
-        }
-        return 1; 
-    }
-    for (int i = 0; i < len; i++) {
-        if (!isalnum(text[i]) || isspace(text[i])) {
-            return 0;  
-        }
-    }
-    return 1; 
-}
-
 // we gonna assume for now that the input's syntax is correct 
 
 tree parse_program(char* source_code){
@@ -89,6 +59,7 @@ tree parse_expression(char* source_code){
             break;
         case '"':
             expression_node = parse_literal(source_code);
+            terminal = 0;
             break;
         case '|':
             expression_node = parse_expression(source_code + 1);
@@ -104,18 +75,15 @@ tree parse_expression(char* source_code){
     }
     if (expression_node != NULL) {
         char* remaining_code = source_code + strlen(expression_node->info);
-        printf("%s", expression_node->info);
+        //printf("%s\n",remaining_code);
         // checks if the node is not terminal
-        if(isTerminal(expression_node->info) == 0 ){
-            printf("not terminal");
+        if(terminal != 0 ){
             expression_node->successor = parse_expression(expression_node->info);
         }
         // only in the case where there is a remaining
-        if(isValid(remaining_code) == 1){
-            printf("valid");
-            expression_node->next_sibling = create_node(remaining_code);
-            expression_node->next_sibling->successor = parse_expression(remaining_code);
-        }
+        expression_node->next_sibling = create_node(remaining_code);
+        expression_node->next_sibling->successor = parse_expression(remaining_code);
+        
     }
     
     return expression_node;
@@ -126,7 +94,7 @@ tree parse_parentheses(char* source_code){
     int char_len = strlen(source_code);
     int endIndex = char_len;
 
-    for(int i = 0; source_code[i]< char_len ;i++){
+    for(int i = 0; i <= char_len ;i++){
         if(source_code[i] == '('){
             par_flag = 1;
         }
@@ -150,7 +118,7 @@ tree parse_optionals(char* source_code){
     int char_len = strlen(source_code);
     int endIndex = char_len;
 
-    for(int i = 0; source_code[i]< char_len ;i++){
+    for(int i = 0; i <= char_len ;i++){
         if(source_code[i] == '['){
             brackets_flag = 1;
         }
@@ -176,7 +144,7 @@ tree parse_recurssives(char* source_code){
     int char_len = strlen(source_code);
     int endIndex = char_len;
 
-    for(int i = 0; source_code[i]< char_len ;i++){
+    for(int i = 0; i < char_len ;i++){
         if(source_code[i] == '{'){
             flag = 1;
         }
@@ -192,9 +160,8 @@ tree parse_recurssives(char* source_code){
     char* recurssive_slice = slice_prefix(source_code, endIndex);
     tree new_node = create_node(recurssive_slice); // UA
     tree empty_node = create_node("0"); // 0 , also points back to new_node to indicate the recurssivite
-    empty_node->next_sibling = new_node; // ?
-    new_node->next_sibling = empty_node;
-    
+    //empty_node->next_sibling = new_node; // ?
+    //new_node->next_sibling = empty_node;
     return new_node;
 }
 
@@ -202,7 +169,7 @@ tree parse_literal(char* source_code){ // anything betwenn ""
     int char_len = strlen(source_code);
     int endIndex = char_len;
 
-    for(int i = 0; source_code[i]< char_len ;i++){
+    for(int i = 1; i <= char_len ;i++){
         if(source_code[i] == '"'){
            endIndex = i;
            break;
