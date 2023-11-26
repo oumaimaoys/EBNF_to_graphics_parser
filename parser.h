@@ -1,15 +1,5 @@
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/tree.h"
-
-tree parse_program(char* source_code);
-
-tree parse_expression(char* source_code);
-
-tree parse_optionals(char* source_code);
-
-tree parse_recurssives(char* source_code);
-
-tree parse_literal(char* source_code);
-
-tree parse_identifier(char* source_code);
-
-tree parse_parentheses(char* source_code);
+int parser(Token* input);
+void parse_production(Token* input);
+void parse_expression(Token* input);
+void parse_term(Token* input);
+void parse_factor(Token* input);

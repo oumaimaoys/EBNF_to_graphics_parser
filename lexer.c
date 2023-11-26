@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h" 
 
 char* extract_substring(char* p1, int length) {
     char* var = (char*)malloc(length + 1);
@@ -129,6 +130,8 @@ int main(){
 
     Token* parse_tree = lexer(input_ebnf);
     displayTokenList(parse_tree);
+    printf("\n");
+    parser(parse_tree);
 
     return 0;
 }
