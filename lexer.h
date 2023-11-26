@@ -1,5 +1,4 @@
-
-
+// TODO redefine type for token as enum
 typedef struct Token{
     char* type;
     char* value;

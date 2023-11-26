@@ -10,12 +10,13 @@ int parser(Token* input){
     return 1;
 }
 
-void parse_production(Token* input){ // program: ident = expression
-    Token* p = input;
+void parse_production(Token* p){ // program: ident = expression
+    printf(" 1 called");
     if(strcmp(p->type, "Identifier") == 0){
         p= p->next;
         if (strcmp(p->type, "Eql") == 0){
             p= p->next;
+            parse_expression(p);
         }
         else{
             printf("expected '='");
@@ -26,29 +27,38 @@ void parse_production(Token* input){ // program: ident = expression
         printf("expected 'identifier'");
         exit(EXIT_FAILURE);
     }
-    parse_expression(p);
+    
+    
 }
 
-void parse_expression(Token* input){
-    Token* p = input;
-    parse_term(p);
-    p= p->next;
-    while(strcmp(p->type, "Bar") == 0){
-        p = p->next;
+void parse_expression(Token* p){
+    printf(" 2 called");
+    if (p != NULL){
         parse_term(p);
+        p= p->next;
+        while(strcmp(p->type, "Bar") == 0){
+            p = p->next;
+            parse_term(p);
+        }
     }
+    else{
+        printf("expected expression");
+        exit(EXIT_FAILURE);
+    }
+
 }
 
-void parse_term(Token* input){
-    Token* p = input;
+void parse_term(Token* p){
+    printf(" 3 called");
     while((strcmp(p->type, "Identifier") == 0 ) || (strcmp(p->type, "Literal") == 0) || (strcmp(p->type, "LPar") == 0) || (strcmp(p->type, "LBrak") == 0) || (strcmp(p->type, "LBrace") == 0)){
         parse_factor(p);
         p = p->next;
     }
+    
 }
 
-void parse_factor(Token* input){
-    Token* p = input;
+void parse_factor(Token* p){
+    printf(" 4 called");
     if (strcmp(p->type, "Identifier") == 0){
         p = p->next;
     }

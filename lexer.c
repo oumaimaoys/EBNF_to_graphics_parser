@@ -131,7 +131,7 @@ int main(){
     Token* parse_tree = lexer(input_ebnf);
     displayTokenList(parse_tree);
     printf("\n");
-    parser(parse_tree);
+    printf("%d",parser(parse_tree));
 
     return 0;
 }
