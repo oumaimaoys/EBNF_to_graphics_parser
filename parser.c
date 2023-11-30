@@ -12,94 +12,95 @@ int parser(Token* input){
 
 void parse_production(Token* p){ // program: ident = expression
     printf(" 1 called");
-    if(strcmp(p->type, "Identifier") == 0){
+    if( p->type == Identifier ){
         p= p->next;
-        if (strcmp(p->type, "Eql") == 0){
+        if ( p->type == Eql ){
             p= p->next;
-            parse_expression(p);
+            p = parse_expression(p);
         }
         else{
-            printf("expected '='");
+            printf("\nerror: expected '='");
             exit(EXIT_FAILURE);
         }
     }
     else{
-        printf("expected 'identifier'");
+        printf("\nerror: expected 'Identifier'");
         exit(EXIT_FAILURE);
     }
     
-    
 }
 
-void parse_expression(Token* p){
+Token* parse_expression(Token* p){
     printf(" 2 called");
     if (p != NULL){
-        parse_term(p);
-        p= p->next;
-        while(strcmp(p->type, "Bar") == 0){
+        p = parse_term(p);
+        while( p->type == Bar ){
             p = p->next;
-            parse_term(p);
+            p = parse_term(p);
         }
     }
     else{
-        printf("expected expression");
+        printf("\nerror: expected expression");
         exit(EXIT_FAILURE);
     }
-
+    return p;
 }
 
-void parse_term(Token* p){
+Token* parse_term(Token* p){
     printf(" 3 called");
-    while((strcmp(p->type, "Identifier") == 0 ) || (strcmp(p->type, "Literal") == 0) || (strcmp(p->type, "LPar") == 0) || (strcmp(p->type, "LBrak") == 0) || (strcmp(p->type, "LBrace") == 0)){
-        parse_factor(p);
-        p = p->next;
+    while(( p->type == Identifier ) || ( p->type == Literal) || ( p->type == LPar ) || ( p->type == LBrak) || ( p->type == LBrace)){
+        p = parse_factor(p);
     }
-    
+    return p;
 }
 
-void parse_factor(Token* p){
+Token* parse_factor(Token* p){
     printf(" 4 called");
-    if (strcmp(p->type, "Identifier") == 0){
-        p = p->next;
-    }
-    else if (strcmp(p->type, "Literal") == 0 ){
-        p = p->next;
-    }
-    else if (strcmp(p->type, "LPar") == 0){
-        p = p->next;
-        parse_expression(p);
-        if(strcmp(p->type, "RPar") == 0){
+    switch (p->type){
+        case Identifier:
+            printf("here");
             p = p->next;
-        }
-        else{
-            printf("expected ')' ");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else if(strcmp(p->type, "LBrak") == 0){
-        p = p->next;
-        parse_expression(p);
-        if(strcmp(p->type, "RBrak") == 0){
+            break;
+        case Literal:
             p = p->next;
-        }
-        else{
-            printf("expected ']' ");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else if (strcmp(p->type,"LBrace") == 0){
-        p=p->next;
-        parse_expression(p);
-        if(strcmp(p->type,"RBrace") == 0){
+            break;
+        case LPar:
             p = p->next;
-        }
-        else{
-            printf("expected '}' ");
+            p = parse_expression(p);
+            if( p->type == RPar ){
+                p = p->next;
+            }
+            else{
+                printf("\nerror : expected ')' ");
+                exit(EXIT_FAILURE);
+            }
+            break;
+        case LBrak:
+            p = p->next;
+            p = parse_expression(p);
+            if( p->type == RBrak ){
+                p = p->next;
+            }
+            else{
+                printf("\nerror : expected ']' ");
+                exit(EXIT_FAILURE);
+            }
+            break;
+        case LBrace:
+            p = p->next;
+            p = parse_expression(p);
+            if( p->type == RBrace ){
+                p = p->next;
+            }
+            else{
+                printf("\nerror : expected '}' ");
+                exit(EXIT_FAILURE);
+            }
+            break;
+        default:
+            printf("\nerror : syntax");
             exit(EXIT_FAILURE);
-        }
+            break;
     }
-    else{
-        printf("error : syntax");
-        exit(EXIT_FAILURE);
-    }
+    return p;
 }

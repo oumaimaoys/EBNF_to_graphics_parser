@@ -15,13 +15,13 @@ char* extract_substring(char* p1, int length) {
     return var;
 }
 
-Token* new_token(char* type, char* value) {
+Token* new_token(TokenType type, char* value) {
     Token* newToken = (Token*)malloc(sizeof(Token));
 
     if (newToken == NULL) {
         exit(EXIT_FAILURE);
     }    
-    newToken->type = strdup(type);
+    newToken->type = type;
     newToken->value = strdup(value);
     newToken->next = NULL;
 
@@ -33,28 +33,28 @@ Token* scan_token(char* input){
     char* p1 = input;
     switch (*p1){
         case '(':
-            token = new_token("LPar", "(");
+            token = new_token(LPar, "(");
             break;
         case ')':
-            token = new_token("RPar", ")");
+            token = new_token(RPar, ")");
             break;
         case '[':
-            token = new_token("LBrak", "[");
+            token = new_token(LBrak, "[");
             break;
         case ']':
-            token = new_token("RBrak", "]");
+            token = new_token(RBrak, "]");
             break;
         case '{':
-            token = new_token("LBrace", "{");
+            token = new_token(LBrace, "{");
             break;
         case '}':
-            token = new_token("Rbrace", "}");
+            token = new_token(RBrace, "}");
             break;
         case '|':
-            token = new_token("Bar", "|");
+            token = new_token(Bar, "|");
             break;
         case '=':
-            token = new_token("Eql", "=");
+            token = new_token(Eql, "=");
             break;
         case '\"':
             p1++;
@@ -63,7 +63,7 @@ Token* scan_token(char* input){
             }
             size_t length = p1 - input + 1;
             char* value = extract_substring(input, length);
-            token = new_token("Literal", value);
+            token = new_token(Literal, value);
             break;
         default:
             if(isalnum(*p1)){
@@ -72,7 +72,7 @@ Token* scan_token(char* input){
                 }
                 size_t length = p1 - input;
                 char* value = extract_substring(input, length);
-                token = new_token("Identifier", value);
+                token = new_token(Identifier, value);
             }
             break;
     }
@@ -112,9 +112,49 @@ void displayTokenList(Token* head) {
     printf("Token List:\n");
 
     while (head != NULL) {
-        printf("%s[Value: %s] ", head->type, head->value);
+        // Map TokenType to corresponding strings for display
+        const char* typeString;
+        switch (head->type) {
+            case Identifier:
+                typeString = "IDENTIFIER";
+                break;
+            case Literal:
+                typeString = "LITERAL";
+                break;
+            case LPar:
+                typeString = "LPar";
+                break;
+            case RPar:
+                typeString = "RPar";
+                break;
+            case LBrak:
+                typeString = "LBrak";
+                break;
+            case RBrak:
+                typeString = "RBrak";
+                break;
+            case LBrace:
+                typeString = "LBrace";
+                break;
+            case RBrace:
+                typeString = "RBrace";
+                break;
+            case Bar:
+                typeString = "Bar";
+                break;
+            case Eql:
+                typeString = "Eql";
+                break;
+            default:
+                typeString = "UNKNOWN";
+                break;
+        }
+
+        printf("%s[Value: %s] ", typeString, head->value);
         head = head->next;
     }
+
+    printf("\n");
 }
 
 int main(){
