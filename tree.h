@@ -1,13 +1,36 @@
 
+typedef enum{
+    ID,
+    LITERAL,
+    RECURSSIVE,
+    OPTIONAL,
+    ALTERNATIVE,
+    PARENT,
+    NULL_TYPE,
+} NodeType;
+
+typedef struct node_L {
+    void* child;
+    struct node_L* nextNode;
+} list;
+
+
 typedef struct node_S *tree; // pointer to first node which defines the tree
 typedef struct node_S {
-    char* info;
-    tree left; 
-    tree right;
+    NodeType type;
+    char *info; // not null only if type == id or literal
+    list* children;
 } node;
+
 
 tree initiate_tree();
 
-tree create_node(char* data);
+tree create_node(char *data, NodeType type);
 
-void read_tree(tree root);
+list* init_list();
+
+void push(list* my_list, tree item);
+
+list* concactenate(list* list_1, list* list_2);
+
+void displayTree(tree root);

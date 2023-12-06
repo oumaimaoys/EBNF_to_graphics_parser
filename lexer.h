@@ -9,6 +9,7 @@ typedef enum {
     RBrace,
     Bar,
     Eql,
+    SemiColon,
 } TokenType;
 
 typedef struct Token{

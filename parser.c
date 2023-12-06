@@ -4,103 +4,166 @@
 #include <string.h>
 #include "C:/Users/lenovo/Documents/insea2023/compilateur/lexer.h"
 #include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h" 
+ 
 
-int parser(Token* input){
-    parse_production(input);
-    return 1;
+Token* next_token;
+
+void scan_token(){ // advances next_token
+    next_token = next_token->next;
 }
 
-void parse_production(Token* p){ // program: ident = expression
-    printf(" 1 called");
-    if( p->type == Identifier ){
-        p= p->next;
-        if ( p->type == Eql ){
-            p= p->next;
-            p = parse_expression(p);
+tree parser(Token* input){
+    next_token = input;
+    tree parse_tree = parse_production();
+    if(parse_tree != NULL){
+        return parse_tree;
+    }
+    else{
+        printf("\nerror: parsing failed\n");
+        return NULL;
+    }
+}
+
+tree parse_production(){ // program: ident = expression
+    if( next_token->type == Identifier ){
+        tree result = create_node(next_token->value, ID);
+        scan_token();
+        if (next_token!=NULL){
+            if ( next_token->type == Eql ){
+                scan_token();
+                list* exp = parse_expression();
+                result->children = concactenate(result->children, exp);
+                if (next_token != NULL){
+                    if( next_token->type == SemiColon){
+                        scan_token();
+                        if(next_token!=NULL){
+                            printf("\n error: invalid syntax");
+                        }
+                        else{
+                            return result;
+                        }
+                    }
+                    else{
+                        printf("\nerror: expected a semicolon");
+                    }
+                }
+                else{
+                    printf("\nerror: missing a semicolon");
+                }
+            }
+            else{
+                printf("\nerror: expected '='");
+            }
         }
         else{
-            printf("\nerror: expected '='");
-            exit(EXIT_FAILURE);
+            printf("\nerror: expected a production rule");
         }
     }
     else{
         printf("\nerror: expected 'Identifier'");
-        exit(EXIT_FAILURE);
     }
-    
+    return NULL;
 }
 
-Token* parse_expression(Token* p){
-    printf(" 2 called");
-    if (p != NULL){
-        p = parse_term(p);
-        while( p->type == Bar ){
-            p = p->next;
-            p = parse_term(p);
+list* parse_expression(){
+    if (next_token != NULL){
+        list* a = parse_term();
+        tree bar = NULL;
+        int flag = 0;
+        while( (next_token!=NULL) && (next_token->type == Bar) ){
+            bar = create_node("", ALTERNATIVE);
+            bar->children = concactenate(bar->children, a);
+            
+            scan_token();
+            list* b = parse_term();
+            bar->children = concactenate(bar->children, b);
         }
+
+        if(bar!=NULL){
+            list* BAR = init_list();
+            push(BAR, bar);
+            return BAR;
+        }
+        if (a!= NULL && bar==NULL){
+            return a;
+        }
+
     }
     else{
-        printf("\nerror: expected expression");
+        printf("\nsyntax error: expected expression");
         exit(EXIT_FAILURE);
     }
-    return p;
 }
 
-Token* parse_term(Token* p){
-    printf(" 3 called");
-    while(( p->type == Identifier ) || ( p->type == Literal) || ( p->type == LPar ) || ( p->type == LBrak) || ( p->type == LBrace)){
-        p = parse_factor(p);
+list* parse_term(){
+    list* children = init_list();
+    tree a = NULL;
+    while((next_token != NULL )&& (( next_token->type == Identifier ) || ( next_token->type == Literal) || ( next_token->type == LPar ) || ( next_token->type == LBrak) || ( next_token->type == LBrace))){
+        a = parse_factor();
+        push(children, a);
     }
-    return p;
+    return children;
 }
 
-Token* parse_factor(Token* p){
-    printf(" 4 called");
-    switch (p->type){
+tree parse_factor(){
+    tree a = NULL;
+    list* e = NULL;
+    switch (next_token->type){
         case Identifier:
-            printf("here");
-            p = p->next;
+            a = create_node(next_token->value, ID);
+            scan_token();
+            return a;
             break;
         case Literal:
-            p = p->next;
+            a = create_node(next_token->value, LITERAL);
+            scan_token();
+            return a;
             break;
         case LPar:
-            p = p->next;
-            p = parse_expression(p);
-            if( p->type == RPar ){
-                p = p->next;
+            scan_token();
+            e = parse_expression();
+            if( next_token->type == RPar ){
+                scan_token();
+                tree b = create_node("", PARENT);
+                b->children = concactenate(b->children, e);
+                return b;
             }
             else{
-                printf("\nerror : expected ')' ");
+                printf("\nsyntax error : expected ')' ");
                 exit(EXIT_FAILURE);
             }
             break;
         case LBrak:
-            p = p->next;
-            p = parse_expression(p);
-            if( p->type == RBrak ){
-                p = p->next;
+            scan_token();
+            e = parse_expression();
+            if( next_token->type == RBrak ){
+                scan_token();
+                tree b = create_node("", OPTIONAL);
+                b->children = concactenate(b->children, e);
+                return b;
             }
             else{
-                printf("\nerror : expected ']' ");
+                printf("\nsyntax error : expected ']' ");
                 exit(EXIT_FAILURE);
             }
             break;
         case LBrace:
-            p = p->next;
-            p = parse_expression(p);
-            if( p->type == RBrace ){
-                p = p->next;
+            scan_token();
+            e = parse_expression();
+            if( next_token->type == RBrace ){
+                scan_token();
+                tree b = create_node("", RECURSSIVE);
+                b->children = concactenate(b->children, e);
+                return b;
             }
             else{
-                printf("\nerror : expected '}' ");
+                printf("\nsyntax error : expected '}' ");
                 exit(EXIT_FAILURE);
             }
             break;
         default:
-            printf("\nerror : syntax");
+            printf("\nsyntax error : invalid factor");
             exit(EXIT_FAILURE);
             break;
     }
-    return p;
 }

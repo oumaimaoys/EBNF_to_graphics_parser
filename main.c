@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h"
+#include "C:/Users/lenovo/Documents/insea2023/compilateur/mapper.h"
 
-int main(){
-    char input_ebnf[100];
-    scanf("%99[^\n]", input_ebnf);
+int main(int argc, char *argv[]){
+    gtk_init(&argc, &argv);
 
-    tree parse_tree = parse_program(input_ebnf);
-    read_tree(parse_tree, 0);
+    // Call the render_app function
+    render_app(argc, argv);
 
     return 0;
 }

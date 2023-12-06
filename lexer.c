@@ -1,9 +1,11 @@
-#include "lexer.h"
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "C:/Users/lenovo/Documents/insea2023/compilateur/lexer.h"
 #include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h" 
+  
 
 char* extract_substring(char* p1, int length) {
     char* var = (char*)malloc(length + 1);
@@ -28,7 +30,7 @@ Token* new_token(TokenType type, char* value) {
     return newToken;
 }
 
-Token* scan_token(char* input){
+Token* scanToken(char* input){
     Token* token; 
     char* p1 = input;
     switch (*p1){
@@ -55,6 +57,9 @@ Token* scan_token(char* input){
             break;
         case '=':
             token = new_token(Eql, "=");
+            break;
+        case ';':
+            token = new_token(SemiColon, ";");
             break;
         case '\"':
             p1++;
@@ -88,7 +93,7 @@ Token* lexer(char* expression){
 
     while (*p1 != '\0'){
         if(*p1 != ' '){
-            Token* temp = scan_token(p1);   
+            Token* temp = scanToken(p1);   
             if (token_list == NULL) {
                 token_list = temp;  
             }
@@ -145,6 +150,9 @@ void displayTokenList(Token* head) {
             case Eql:
                 typeString = "Eql";
                 break;
+            case SemiColon:
+                typeString = "SEmicolon";
+                break;
             default:
                 typeString = "UNKNOWN";
                 break;
@@ -170,8 +178,13 @@ int main(){
 
     Token* parse_tree = lexer(input_ebnf);
     displayTokenList(parse_tree);
-    printf("\n");
-    printf("%d",parser(parse_tree));
+
+    tree ast = parser(parse_tree);
+    if(ast != NULL){
+        displayTree(ast);
+    }
+    
+
 
     return 0;
 }
