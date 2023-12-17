@@ -116,9 +116,6 @@ void displayTreeHelper(tree root, int level) {
             break;
     }
     printf("(%s[%s],%d )", typeString, root->info,level);
-    
-    
-    
 
     // Recursively display children
     list *currentChild = root->children;
