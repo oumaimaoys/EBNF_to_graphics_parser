@@ -136,13 +136,28 @@ void render_label(SDL_Renderer *renderer, char* text, int size, int x, int y){ /
     TTF_Quit();
 }
 
-void render_alt(SDL_Renderer *renderer){}
+void render_alt(SDL_Renderer *renderer, int x, int y, int l, int h, int num_items){//l and h are maximums
+    render_line(renderer, x, y, l, 0);
+    for(int i = 1; i< num_items;i++){
+        render_line(renderer, x, y, h*i, 270);
+        render_line(renderer, x+l, y, h*i, 270);
+        render_line(renderer, x, y+(h*i), l, 0);
+    }
+}
 
-void render_opt(SDL_Renderer *renderer){}
+void render_opt(SDL_Renderer *renderer, int x, int y, int l, int h){
+    render_line(renderer, x, y, l, 0);
+    render_line(renderer, x+l, y, h, 270);
+    render_line(renderer, x, y+h, l, 0);
+    render_line(renderer, x, y+h, h, 90);
+}
 
-void render_rec(SDL_Renderer *renderer){}
-
-void render_exp(SDL_Renderer *renderer){}
+void render_rec(SDL_Renderer *renderer, int x, int y, int l, int h){
+    render_line(renderer, x, y, l, 0);
+    render_line(renderer, x+l, y, h, 270);
+    render_line(renderer, x, y+h, l, 0);
+    render_arrow(renderer, x, y+h, h, 90);
+}
 
 void render_level(SDL_Renderer *renderer, tree root, int level){
     if (root == NULL) {
@@ -162,7 +177,7 @@ void render_level(SDL_Renderer *renderer, tree root, int level){
                 render_label(renderer, root->info, 20, 0, 0);
                 break;
             case RECURSSIVE:
-                
+                render_rec(renderer, )
                 break;
             case OPTIONAL:
                 
@@ -171,7 +186,6 @@ void render_level(SDL_Renderer *renderer, tree root, int level){
                 
                 break;
             case PARENT:
-                
                 break;
             default:       
                 break;
