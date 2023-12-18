@@ -1,11 +1,17 @@
-#include <gtk/gtk.h>
 #include <SDL2/SDL.h>
 #include <string.h>
 #include <SDL2/SDL_ttf.h>
-#include "tree.h"
+#include <stdio.h>
+#include "lexer.h"
+#include "parser.h"
 
 
 #undef main
+
+int window_height = 600;
+int window_width = 1400;
+
+// rendering basic shapes functions
 
 void render_line(SDL_Renderer *renderer,  int x, int y, int length, int angle){
     SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -123,7 +129,11 @@ void render_label(SDL_Renderer *renderer, char* text, int size, int x, int y){ /
     Message_rect.h = h;
 
     // Render the filled rectangle
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // White color for the rectangle
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); 
+    SDL_RenderFillRect(renderer, &Message_rect);
+
+    // render frame
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
     SDL_RenderDrawRect(renderer, &Message_rect);
 
     //SDL_RenderDrawRect(renderer, &Message_rect);
@@ -159,65 +169,112 @@ void render_rec(SDL_Renderer *renderer, int x, int y, int l, int h){
     render_arrow(renderer, x, y+h, h, 90);
 }
 
-void render_level(SDL_Renderer *renderer, tree root, int level){
+// rendering the AST
+
+int findSumOfMaxChildLengthsExcludingAlt(tree root) {
+    if (root == NULL) {
+        return 0;
+    }
+
+    // Initialize sum of max lengths to 0
+    int sumOfMaxLengths = 1;
+
+    // If the node is not ALTERNATIVE, calculate the sum of max lengths of its children
+    if (root->type != ALTERNATIVE) {
+        list* currentChild = root->children;
+        while (currentChild != NULL) {
+            tree childNode = (tree)(currentChild->child);
+            int childLength = findSumOfMaxChildLengthsExcludingAlt(childNode);
+            sumOfMaxLengths += childLength;
+            currentChild = currentChild->nextNode;
+        }
+    }
+
+    return sumOfMaxLengths;
+}
+
+void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
     if (root == NULL) {
         return;
     }
 
-    if (level == 0){
-        render_label(renderer, root->info, 20, 0, 0);
-        render_arrow(renderer, 20, 50, 700, 0);
+    list *currentChild = root->children;
+    // counting how many elements in one level
+    int level_length = 0;
+    while (currentChild != NULL) {
+        level_length++;
+        currentChild = currentChild->nextNode;
     }
-    else{
+
+
+    if (level == 0){
+        int max_children = findSumOfMaxChildLengthsExcludingAlt(root);
+        render_label(renderer, root->info, 20, 20, 10);
+        render_arrow(renderer, x, y, max_children*200, 0);
+    }
+    if (level !=0) {
         switch (root->type) {
             case ID:
-                render_label(renderer, root->info, 20, 0, 0);
+                render_label(renderer, root->info, 20, x + 10, y - 10);
                 break;
             case LITERAL:
-                render_label(renderer, root->info, 20, 0, 0);
+                render_label(renderer, root->info, 20, x + 10, y - 10);
                 break;
             case RECURSSIVE:
-                render_rec(renderer, )
+                render_rec(renderer, x, y, (level_length*210), 150);
+                x= x+10;
+                y = y + 150;
                 break;
             case OPTIONAL:
-                
+                render_opt(renderer, x, y, (level_length*200), 150);
+                x = x + 10;
+                y = y + 150;
                 break;
             case ALTERNATIVE:
-                
-                break;
-            case PARENT:
+                render_alt(renderer, x, y,  200, 150, level_length);
                 break;
             default:       
                 break;
         }
     }
-
-
-    // Recursively display children
-    list *currentChild = root->children;
-    while (currentChild != NULL) {
-        render_level(renderer, (tree)(currentChild->child), level + 1);
-        currentChild = currentChild->nextNode;
+    // Recursively render children
+    currentChild = root->children;
+    if ((root->type!= ALTERNATIVE)){
+        while (currentChild != NULL) {
+            render_level(renderer, (tree)(currentChild->child), x, y, level + 1);
+            x += 210;
+            currentChild = currentChild->nextNode;
+        }
+    }
+    if ((root->type == ALTERNATIVE)){
+        while (currentChild != NULL) {
+            render_level(renderer, (tree)(currentChild->child), x+10, y, level + 1);
+            y += 150;
+            currentChild = currentChild->nextNode;
+        }
     }
 }
 
 void render_production(SDL_Renderer *renderer, tree root){
-    render_level(renderer, root, 0);
+    render_level(renderer, root, 30, 60, 0);
 }
 
-static int render_window(){
+//events
+
+static int render_window(tree ast){
     // Create a window
     SDL_Window *window = SDL_CreateWindow(
         "SDL2 Window",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        800, 600,
+        window_width, window_height,
         SDL_WINDOW_SHOWN
     );
     if (window == NULL) {
         fprintf(stderr, "Window creation failed: %s\n", SDL_GetError());
         return 1;
     }
+    SDL_SetWindowResizable(window, SDL_TRUE);
     // create renderer
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 225,225,225,255);
@@ -239,11 +296,7 @@ static int render_window(){
         }
 
         // rendering
-        //render_label(renderer, "hellothere", 20, 10,10);
-        //render_arrow(renderer, 200, 200, 500, 0);
-        //render_line(renderer, 400, 400, 200, 90);
-        //render_arrow(renderer, 300, 400, 200, 90);
-        //render_line(renderer, 300, 400, 100, 0);
+        render_production(renderer, ast);
         
         SDL_RenderPresent(renderer);
         SDL_Delay(16); 
@@ -261,8 +314,22 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    render_window();
+    char input_ebnf[100];
+    printf("saisie l'expression ebnf");
+    fgets(input_ebnf, sizeof(input_ebnf), stdin);
 
+    // Remove the newline character at the end, if present
+    size_t len = strlen(input_ebnf);
+    if (len > 0 && input_ebnf[len - 1] == '\n') {
+        input_ebnf[len - 1] = '\0';
+    }
+
+    Token* parse_tree = lexer(input_ebnf);
+
+    tree ast = parser(parse_tree);
+    if(ast != NULL){
+        render_window(ast);
+    }
 
     return 0;
 }

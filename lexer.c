@@ -4,8 +4,7 @@
 #include <stdio.h>
 
 #include "C:/Users/lenovo/Documents/insea2023/compilateur/lexer.h"
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h" 
-  
+
 
 char* extract_substring(char* p1, int length) {
     char* var = (char*)malloc(length + 1);
@@ -163,28 +162,4 @@ void displayTokenList(Token* head) {
     }
 
     printf("\n");
-}
-
-int main(){
-    char input_ebnf[100];
-
-    fgets(input_ebnf, sizeof(input_ebnf), stdin);
-
-    // Remove the newline character at the end, if present
-    size_t len = strlen(input_ebnf);
-    if (len > 0 && input_ebnf[len - 1] == '\n') {
-        input_ebnf[len - 1] = '\0';
-    }
-
-    Token* parse_tree = lexer(input_ebnf);
-    displayTokenList(parse_tree);
-
-    tree ast = parser(parse_tree);
-    if(ast != NULL){
-        displayTree(ast);
-    }
-    
-
-
-    return 0;
 }
