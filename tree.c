@@ -85,6 +85,9 @@ void displayTreeHelper(tree root, int level) {
 
     // Print current node
     for (int i = 0; i < level; i++) {
+        printf("\n"); // Two spaces for each level
+    }
+    for (int i = 0; i < level; i++) {
         printf("  "); // Two spaces for each level
     }
 
@@ -123,8 +126,40 @@ void displayTreeHelper(tree root, int level) {
         displayTreeHelper((tree)(currentChild->child), level + 1);
         currentChild = currentChild->nextNode;
     }
+
+    
 }
 
 void displayTree(tree root) {
     displayTreeHelper(root, 0);
+}
+
+int count_leaves(tree root){
+    if (root == NULL) {
+        return 0;
+    }
+
+    // If the node is a leaf and not of ALTERNATIVE type, return 1
+    if (root->type != ALTERNATIVE && root->children == NULL) {
+        return 1;
+    }
+
+    // Initialize count to 0
+    int count = 0;
+
+    // Traverse the children and sum up the counts
+    list* currentChild = root->children;
+    if (root->type != ALTERNATIVE){
+        while (currentChild != NULL) {
+            tree childNode = (tree)(currentChild->child);
+            count += count_leaves(childNode);
+            currentChild = currentChild->nextNode;
+        }
+    }
+    else{
+        count = 1;
+    }
+   
+
+    return count;
 }

@@ -1,3 +1,5 @@
+#ifndef TREE_H
+#define TREE_H
 
 typedef enum{
     ID,
@@ -34,3 +36,7 @@ void push(list* my_list, tree item);
 list* concactenate(list* list_1, list* list_2);
 
 void displayTree(tree root);
+
+int count_leaves(tree root);
+
+#endif /* TREE_H */

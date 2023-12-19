@@ -2,14 +2,12 @@
 #include <string.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
-#include "lexer.h"
-#include "parser.h"
+#include "mapper.h"
 
 
 #undef main
 
-int window_height = 600;
-int window_width = 1400;
+int basic_size = 100;
 
 // rendering basic shapes functions
 
@@ -171,28 +169,6 @@ void render_rec(SDL_Renderer *renderer, int x, int y, int l, int h){
 
 // rendering the AST
 
-int findSumOfMaxChildLengthsExcludingAlt(tree root) {
-    if (root == NULL) {
-        return 0;
-    }
-
-    // Initialize sum of max lengths to 0
-    int sumOfMaxLengths = 1;
-
-    // If the node is not ALTERNATIVE, calculate the sum of max lengths of its children
-    if (root->type != ALTERNATIVE) {
-        list* currentChild = root->children;
-        while (currentChild != NULL) {
-            tree childNode = (tree)(currentChild->child);
-            int childLength = findSumOfMaxChildLengthsExcludingAlt(childNode);
-            sumOfMaxLengths += childLength;
-            currentChild = currentChild->nextNode;
-        }
-    }
-
-    return sumOfMaxLengths;
-}
-
 void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
     if (root == NULL) {
         return;
@@ -208,30 +184,30 @@ void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
 
 
     if (level == 0){
-        int max_children = findSumOfMaxChildLengthsExcludingAlt(root);
-        render_label(renderer, root->info, 20, 20, 10);
-        render_arrow(renderer, x, y, max_children*200, 0);
+        int max_children = count_leaves(root);
+        render_label(renderer, root->info, 12, 20, 10);
+        render_arrow(renderer, x, y, (max_children*(basic_size+5)), 0);
     }
     if (level !=0) {
         switch (root->type) {
             case ID:
-                render_label(renderer, root->info, 20, x + 10, y - 10);
+                render_label(renderer, root->info, 12, x + 5, y - 5);
                 break;
             case LITERAL:
-                render_label(renderer, root->info, 20, x + 10, y - 10);
+                render_label(renderer, root->info, 12, x + 5, y - 5);
                 break;
             case RECURSSIVE:
-                render_rec(renderer, x, y, (level_length*210), 150);
-                x= x+10;
-                y = y + 150;
+                render_rec(renderer, x, y, (level_length*basic_size), 75);
+                x = x + 5;
+                y = y + 75;
                 break;
             case OPTIONAL:
-                render_opt(renderer, x, y, (level_length*200), 150);
-                x = x + 10;
-                y = y + 150;
+                render_opt(renderer, x, y, (level_length*(basic_size-10)), 75);
+                x = x + 5;
+                y = y + 75;
                 break;
             case ALTERNATIVE:
-                render_alt(renderer, x, y,  200, 150, level_length);
+                render_alt(renderer, x, y,  basic_size-10, 75, level_length);
                 break;
             default:       
                 break;
@@ -242,14 +218,14 @@ void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
     if ((root->type!= ALTERNATIVE)){
         while (currentChild != NULL) {
             render_level(renderer, (tree)(currentChild->child), x, y, level + 1);
-            x += 210;
+            x += (basic_size+5)*count_leaves((tree)(currentChild->child));
             currentChild = currentChild->nextNode;
         }
     }
     if ((root->type == ALTERNATIVE)){
         while (currentChild != NULL) {
-            render_level(renderer, (tree)(currentChild->child), x+10, y, level + 1);
-            y += 150;
+            render_level(renderer, (tree)(currentChild->child), x+5, y, level + 1);
+            y += 75;
             currentChild = currentChild->nextNode;
         }
     }
@@ -261,13 +237,13 @@ void render_production(SDL_Renderer *renderer, tree root){
 
 //events
 
-static int render_window(tree ast){
+int render_window(tree ast){
     // Create a window
     SDL_Window *window = SDL_CreateWindow(
         "SDL2 Window",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        window_width, window_height,
+        0,
+        30,
+        1000, 600,
         SDL_WINDOW_SHOWN
     );
     if (window == NULL) {
@@ -305,31 +281,4 @@ static int render_window(tree ast){
     // Cleanup
     SDL_DestroyWindow(window);
     SDL_Quit();
-}
-
-int main(int argc, char *argv[]) {
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        fprintf(stderr, "SDL initialization failed: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    char input_ebnf[100];
-    printf("saisie l'expression ebnf");
-    fgets(input_ebnf, sizeof(input_ebnf), stdin);
-
-    // Remove the newline character at the end, if present
-    size_t len = strlen(input_ebnf);
-    if (len > 0 && input_ebnf[len - 1] == '\n') {
-        input_ebnf[len - 1] = '\0';
-    }
-
-    Token* parse_tree = lexer(input_ebnf);
-
-    tree ast = parser(parse_tree);
-    if(ast != NULL){
-        render_window(ast);
-    }
-
-    return 0;
 }
