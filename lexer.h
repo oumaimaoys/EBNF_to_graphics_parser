@@ -19,3 +19,5 @@ typedef struct Token{
 } Token;
 
 Token* lexer(char* expression); // returns pointers to first element in list of tokens
+
+void displayTokenList(Token* head);

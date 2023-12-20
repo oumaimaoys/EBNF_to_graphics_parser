@@ -84,9 +84,9 @@ void displayTreeHelper(tree root, int level) {
     }
 
     // Print current node
-    for (int i = 0; i < level; i++) {
-        printf("\n"); // Two spaces for each level
-    }
+    
+    printf("\n"); // Two spaces for each level
+    
     for (int i = 0; i < level; i++) {
         printf("  "); // Two spaces for each level
     }

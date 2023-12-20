@@ -44,46 +44,52 @@ int main(int argc, char *argv[]) {
         input_ebnf[len - 1] = '\0';
     }
 
-    Token* parse_tree = lexer(input_ebnf);
-
     red();
-    tree ast = parser(parse_tree);
+    Token* parse_tree = lexer(input_ebnf);
     reset();
-    if(ast != NULL){
-        green();
-        printf("\n--------------- SUCCESS!!---------------\n");
-        reset();
-        int flag = 0;
-        int choix;
-        while(flag == 0){
-          yellow();
-          printf("\n--------choisie un mode d'affichage:----------\n");
-          printf("1. afficher le diagrammme étant que arbre\n");
-          printf("2. afficher le diagramme graphique\n");
-          printf("3. quit\n");
-          printf(">> ");
+
+    displayTokenList(parse_tree);
+    
+    if (parse_tree != NULL){
+      red();
+      tree ast = parser(parse_tree);
+      reset();
+    
+      if(ast != NULL){
+          green();
+          printf("\n--------------- SUCCESS!!---------------\n");
           reset();
+          int flag = 0;
+          int choix;
+          while(flag == 0){
+            yellow();
+            printf("\n--------choisie un mode d'affichage:----------\n");
+            printf("1. afficher le diagrammme étant que arbre\n");
+            printf("2. afficher le diagramme graphique\n");
+            printf("3. quit\n");
+            printf(">> ");
+            reset();
 
-          scanf("%d", &choix);
-          switch (choix){
-            case 1: 
-              displayTree(ast);
-              break;
-            case 2: 
-              render_window(ast);
-              break;
-            case 3:
-              green();
-              printf("\n----------- quitter ----------------");
-              reset();
-              flag = 1;
-              break;
-            default:
-              break;
+            scanf("%d", &choix);
+            switch (choix){
+              case 1: 
+                displayTree(ast);
+                break;
+              case 2: 
+                render_window(ast);
+                break;
+              case 3:
+                green();
+                printf("\n----------- quitter ----------------");
+                reset();
+                flag = 1;
+                break;
+              default:
+                break;
+            }
           }
-        }
 
+      }
     }
-
     return 0;
 }

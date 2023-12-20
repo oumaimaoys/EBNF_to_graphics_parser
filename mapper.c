@@ -181,8 +181,7 @@ void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
         level_length++;
         currentChild = currentChild->nextNode;
     }
-
-
+    
     if (level == 0){
         int max_children = count_leaves(root);
         render_label(renderer, root->info, 12, 20, 10);

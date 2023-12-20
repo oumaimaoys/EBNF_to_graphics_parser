@@ -78,6 +78,10 @@ Token* scanToken(char* input){
                 char* value = extract_substring(input, length);
                 token = new_token(Identifier, value);
             }
+            else{
+                printf("\nError: invalid symbol!");
+                exit(EXIT_FAILURE);
+            }
             break;
     }
 

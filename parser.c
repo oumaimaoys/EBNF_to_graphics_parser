@@ -44,11 +44,11 @@ tree parse_production(){ // program: ident = expression
                         }
                     }
                     else{
-                        printf("\nerror: expected a semicolon");
+                        printf("\nerror: invalid syntax");
                     }
                 }
                 else{
-                    printf("\nerror: missing a semicolon");
+                    printf("\nerror: expected semicolon");
                 }
             }
             else{
@@ -76,10 +76,17 @@ list* parse_expression(){
             
             scan_token();
             list* b = parse_term();
-            bar->children = concactenate(bar->children, b);
+            if (b->child != NULL){
+                bar->children = concactenate(bar->children, b);
+            }
+            else{
+                printf("\nsyntax error: expected expression");
+                exit(EXIT_FAILURE);
+            }
+            
         }
 
-        if(bar!=NULL){
+        if(bar!=NULL && bar->children!=NULL ){
             list* BAR = init_list();
             push(BAR, bar);
             return BAR;
@@ -98,7 +105,8 @@ list* parse_expression(){
 list* parse_term(){
     list* children = init_list();
     tree a = NULL;
-    while((next_token != NULL )&& (( next_token->type == Identifier ) || ( next_token->type == Literal) || ( next_token->type == LPar ) || ( next_token->type == LBrak) || ( next_token->type == LBrace))){
+    while((next_token != NULL )&& 
+    (( next_token->type == Identifier ) || ( next_token->type == Literal) || ( next_token->type == LPar ) || ( next_token->type == LBrak) || ( next_token->type == LBrace))){
         a = parse_factor();
         push(children, a);
     }
