@@ -197,7 +197,7 @@ void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
                 break;
             case RECURSSIVE:
                 render_rec(renderer, x, y, (level_length*basic_size), 75);
-                x = x + 5;
+                x = x + 5 + ((level_length - 1)*basic_size);
                 y = y + 75;
                 break;
             case OPTIONAL:
@@ -214,10 +214,17 @@ void render_level(SDL_Renderer *renderer, tree root, int x, int y, int level){
     }
     // Recursively render children
     currentChild = root->children;
-    if ((root->type!= ALTERNATIVE)){
+    if ((root->type!= ALTERNATIVE) && (root->type != RECURSSIVE)){
         while (currentChild != NULL) {
             render_level(renderer, (tree)(currentChild->child), x, y, level + 1);
             x += (basic_size+5)*count_leaves((tree)(currentChild->child));
+            currentChild = currentChild->nextNode;
+        }
+    }
+    if (root->type == RECURSSIVE){
+        while (currentChild != NULL) {
+            render_level(renderer, (tree)(currentChild->child), x, y, level + 1);
+            x -= (basic_size + 5) * count_leaves((tree)(currentChild->child));
             currentChild = currentChild->nextNode;
         }
     }

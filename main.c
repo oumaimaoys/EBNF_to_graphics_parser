@@ -47,8 +47,6 @@ int main(int argc, char *argv[]) {
     red();
     Token* parse_tree = lexer(input_ebnf);
     reset();
-
-    displayTokenList(parse_tree);
     
     if (parse_tree != NULL){
       red();
