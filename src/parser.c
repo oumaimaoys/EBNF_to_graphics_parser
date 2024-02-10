@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/lexer.h"
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/parser.h" 
+#include "../my_headers/lexer.h"
+#include "../my_headers/parser.h" 
  
 
 Token* next_token;
@@ -69,7 +69,6 @@ list* parse_expression(){
     if (next_token != NULL){
         list* a = parse_term();
         tree bar = NULL;
-        int flag = 0;
         while( (next_token!=NULL) && (next_token->type == Bar) ){
             bar = create_node("", ALTERNATIVE);
             bar->children = concactenate(bar->children, a);
@@ -94,7 +93,6 @@ list* parse_expression(){
         if (a!= NULL && bar==NULL){
             return a;
         }
-
     }
     else{
         printf("\nsyntax error: expected expression");

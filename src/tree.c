@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/tree.h"
+#include "../my_headers/tree.h"
 
 
 tree initiate_tree(){

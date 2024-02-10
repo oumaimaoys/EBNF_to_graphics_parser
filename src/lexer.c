@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-
-#include "C:/Users/lenovo/Documents/insea2023/compilateur/lexer.h"
+#include "../my_headers/lexer.h"
 
 
 char* extract_substring(char* p1, int length) {
@@ -90,7 +89,6 @@ Token* scanToken(char* input){
 
 Token* lexer(char* expression){
     char* p1 = expression;
-    int exp_len = strlen(expression);
     Token* token_list = NULL;
     Token* previous = NULL;
 

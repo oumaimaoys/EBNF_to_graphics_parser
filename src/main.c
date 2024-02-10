@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include "lexer.h"
-#include "parser.h"
-#include "C:\Users\lenovo\Documents\insea2023\compilateur\mapper.h"
+#include "../my_headers/lexer.h"
+#include "../my_headers/parser.h"
+#include "../my_headers/mapper.h"
 
 #undef main
 
