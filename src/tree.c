@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../my_headers/tree.h"
+#include <tree.h>
 
 
 tree initiate_tree(){

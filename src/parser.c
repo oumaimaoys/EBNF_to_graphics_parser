@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../my_headers/lexer.h"
-#include "../my_headers/parser.h" 
+#include <lexer.h>
+#include <parser.h> 
  
 
 Token* next_token;

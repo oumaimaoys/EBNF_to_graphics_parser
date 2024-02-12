@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-#include "../my_headers/lexer.h"
+#include <lexer.h>
 
 
 char* extract_substring(char* p1, int length) {
