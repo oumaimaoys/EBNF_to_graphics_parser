@@ -94,7 +94,7 @@ void render_label(SDL_Renderer *renderer, char* text, int size, int x, int y){ /
 
     TTF_Init();
     // font , size and color
-    TTF_Font* font = TTF_OpenFont("C:\\Users\\lenovo\\Documents\\insea2023\\compilateur\\assets\\roboto.ttf", size);
+    TTF_Font* font = TTF_OpenFont("..\\assets\\roboto.ttf", size);
 
     SDL_Color Black = {0, 0, 0};
 

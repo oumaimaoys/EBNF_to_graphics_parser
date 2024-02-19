@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     
     char input_ebnf[100];
     yellow();
-    printf("-------- saisie l'expression EBNF -----------\n");
+    printf("-------- enter EBNF expression -----------\n");
     printf(">> ");
     reset();
     
@@ -69,9 +69,9 @@ int main(int argc, char *argv[]) {
           int choix;
           while(flag == 0){
             yellow();
-            printf("\n--------choisie un mode d'affichage:----------\n");
-            printf("1. afficher le diagrammme étant que arbre\n");
-            printf("2. afficher le diagramme graphique\n");
+            printf("\n--------choose visualization mode:----------\n");
+            printf("1. generate syntax tree\n");
+            printf("2. generate diagram\n");
             printf("3. quit\n");
             printf(">> ");
             reset();
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
                   break;
                 case 3:
                   green();
-                  printf("\n----------- quitter ----------------");
+                  printf("\n----------- program exited ----------------");
                   reset();
                   flag = 1;
                   break;
